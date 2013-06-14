@@ -24,7 +24,7 @@
     ctx.clearRect( -canvas.width/2 , -canvas.height , canvas.width , canvas.height );
 
     // Create an array of all the pointables in this frame
-    var pointables = frame.pointables
+    var pointables = frame.pointables;
 
     // Loop through all of the pointables,
     // drawing a point at each tipPosition
@@ -37,7 +37,7 @@
 
       // Getting the touchZone and touchDist
       var touchZone = pointable.touchZone;
-      var touchDist = pointable.touchDist
+      var touchDist = pointable.touchDist;
 
       // If it is touching, the point should be green,
       // otherwise it will be red
@@ -50,7 +50,8 @@
       // create a circle for each pointable
 
       //Making the radius of the circle correspond to the touchDist
-      var radius = Math.abs( touchDist ) * 50 ;
+      var radius = Math.abs( touchDist ) * 50;
+
 
       // Draw the circle at the tip position
       ctx.beginPath();
