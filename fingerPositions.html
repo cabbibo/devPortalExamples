@@ -16,6 +16,9 @@
   // with the leap coordinate system
   ctx.translate( canvas.width/2 , canvas.height );
 
+  // Setting the color we will draw with
+  ctx.fillStyle = 'rgba(255,0,0,.7)';
+
   // This is the function we will call every loop
   // which passes frame data into our function
   function draw( frame ) {
@@ -35,23 +38,8 @@
       // Getting the pointables position
       var pos = pointable.tipPosition;
 
-      // Getting the touchZone and touchDist
-      var touchZone = pointable.touchZone;
-      var touchDist = pointable.touchDist;
-
-      // If it is touching, the point should be green,
-      // otherwise it will be red
-      if( touchZone == 'touching' ){
-        ctx.fillStyle = 'rgba(0,255,0,.7)';
-      }else{
-        ctx.fillStyle = 'rgba(255,0,0,.7)';
-      }
-
-      // create a circle for each pointable
-
       //Making the radius of the circle correspond to the touchDist
-      var radius = Math.abs( touchDist ) * 50;
-
+      var radius = 20;
 
       // Draw the circle at the tip position
       ctx.beginPath();
