@@ -43,7 +43,7 @@
     var pointables = frame.pointables;
 
     // Setting the color for the fingers to Red
-    ctx.fillStyle = 'rgba(255,0,0,.7)';
+    ctx.fillStyle = '#FF4040';
 
     // Loop through all of the pointables,
     // drawing a point at each tipPosition
@@ -125,7 +125,7 @@
 
     //Sets up how all of the circle lines will look
     ctx.lineWidth = 3;
-    ctx.strokeStyle  = 'rgba(255,0,255,.7)';
+    ctx.strokeStyle  = '#8F04A8';
 
     // Draw the circle at the tip position
     ctx.beginPath();
@@ -139,7 +139,7 @@
 
     //Sets up how all of the swipe lines will look
     ctx.lineWidth = 3;
-    ctx.strokeStyle  = 'rgba(0,0,255,.7)';
+    ctx.strokeStyle  = '#7080D7';
 
     //Draws a line from the swipe start position, to its current position
     ctx.beginPath();
@@ -156,19 +156,21 @@
     // Gets a time difference, which will translate to opacity
     var timeDif = frame.timestamp - screenTapTime;
 
-    // Gets an opacity based on the time difference
-    var opacity = 100000/timeDif;
+    //Only draws tap for certain amount of time
+    if(timeDif <= 400000){
 
-    // Sets our fill style according to this opacity
-    ctx.fillStyle = 'rgba(255,255,0,'+ opacity +')';
+      // Sets our fill style according to this opacity
+      ctx.fillStyle = '#c0ffee';
 
-    // Sets radius for the circle
-    var radius = 30;
+      // Sets radius for the circle
+      var radius = 30;
 
-    // Draw the circle at the gesture position
-    ctx.beginPath();
-    ctx.arc( screenTap.x , -screenTap.y, radius , 0 , 2 * Math.PI );
-    ctx.fill();
+      // Draw the circle at the gesture position
+      ctx.beginPath();
+      ctx.arc( screenTap.x , -screenTap.y, radius , 0 , 2 * Math.PI );
+      ctx.fill();
+
+    }
 
   }
 
@@ -181,18 +183,22 @@
 
     // Gets an opacity based on the time difference
     var opacity = 100000/timeDif;
+   
+    //Only draws tap for certain amount of time
+    if(timeDif <= 400000){
 
-    // Sets our fill style according to this opacity
-    ctx.fillStyle = 'rgba(0,255,255,'+ opacity +')';
+      // Sets our fill style according to this opacity
+      ctx.fillStyle = '#A3F06C';
 
-    // Sets radius for the circle
-    var radius = 30;
+      // Sets radius for the circle
+      var radius = 30;
 
-    // Draw the circle at the gesture position
-    ctx.beginPath();
-    ctx.arc( keyTap.x, -keyTap.y, radius , 0 , 2 * Math.PI );
-    ctx.fill();
+      // Draw the circle at the gesture position
+      ctx.beginPath();
+      ctx.arc( keyTap.x , -keyTap.y, radius , 0 , 2 * Math.PI );
+      ctx.fill();
 
+    }
 
   }
 
