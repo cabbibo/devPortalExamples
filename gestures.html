@@ -1,0 +1,231 @@
+<canvas id='canvas'></canvas>
+<script src='leap.js'></script>
+<script>
+
+
+   // This is the position of the screenTap,
+  // which we will change every time the screen is tapped.
+  // This will allow us to draw a screenTap,
+  // And let it slowly fade out, Rather than only showing it
+  // For one frame
+  var screenTap = { x:-99999 , y:0 };
+  var keyTap = { x:-99999 , y:0 };
+
+
+  // This variable is for keeping track of which frame the key
+  // was tapped. It will be used to change the opacity of the 
+  // circle we are drawing at the screenTap
+  var keyTapTime = 0;
+  var screenTapTime = 0;
+ 
+  // Create our canvas variable, using the canvas DOM element
+  var canvas = document.getElementById( 'canvas' );
+
+  // Resize the canvas so that it takes up the whole screen
+  canvas.width = document.body.clientWidth;
+  canvas.height = document.body.clientHeight;
+
+  // Create the 2D rendering context
+  var ctx = canvas.getContext( '2d' );
+
+  // Setting the zero of the canvas, so that is corresponds
+  // with the leap coordinate system
+  ctx.translate( canvas.width/2 , canvas.height );
+
+  // This is the function we will call every loop
+  // which passes frame data into our function
+  function draw( frame ) {
+
+    // Clear the last frame drawn
+    ctx.clearRect( -canvas.width/2 , -canvas.height , canvas.width , canvas.height );
+
+    // Create an array of all the pointables in this frame
+    var pointables = frame.pointables;
+
+    // Setting the color for the fingers to Red
+    ctx.fillStyle = 'rgba(255,0,0,.7)';
+
+    // Loop through all of the pointables,
+    // drawing a point at each tipPosition
+    for ( var i = 0; i < pointables.length; i++ ) {
+
+      var pointable = pointables[i];
+
+      // Getting the pointables position
+      var pos = pointable.tipPosition;
+
+      // Making the radius of the circle correspond to the touchDist
+      var radius = 20;
+
+      // Draw the circle at the tip position
+      ctx.beginPath();
+      ctx.arc( pos.x , -pos.y, radius , 0 , 2 * Math.PI );
+      ctx.fill();
+
+    }
+
+    // Creates an array of all of the frames gestures
+    var gestures = frame.gestures;
+
+    // Loop through all of the gestures and draw each type
+    for ( var i = 0; i < gestures.length; i++){
+
+      var gesture = gestures[i];
+
+      // Calling all onGesture functions for the different 
+      // gestures
+      if( gesture.type == 'screenTap' ){
+        onScreenTap( gesture , frame );
+      }else if( gesture.type == 'keyTap' ){
+        onKeyTap( gesture , frame );
+      }else if( gesture.type == 'circle' ){
+        onCircle( gesture );
+      }else if( gesture.type == 'swipe' ){
+        onSwipe( gesture );
+      }
+
+    }
+
+    drawScreenTap(frame);
+    drawKeyTap(frame);
+
+
+  };
+
+
+  /*
+  
+    Setting up the different Gesture Functions
+
+    */
+
+  function onScreenTap(gesture,frame){
+    
+    // Setting the screenTap position
+    screenTap.x = gesture.position.x;
+    screenTap.y = gesture.position.y;
+
+    // Sets our screen tap time, to help us with opacity
+    screenTapTime = frame.timestamp;
+
+  }
+
+  function onKeyTap(gesture,frame){
+
+    // Setting the keyTap position
+    keyTap.x = gesture.position.x;
+    keyTap.y = gesture.position.y;
+
+    // Sets our key tap time, to help us with opacity
+    keyTapTime = frame.timestamp;
+
+  }
+
+  function onCircle(gesture){
+
+    //Sets up how all of the circle lines will look
+    ctx.lineWidth = 3;
+    ctx.strokeStyle  = 'rgba(255,0,255,.7)';
+
+    // Draw the circle at the tip position
+    ctx.beginPath();
+    ctx.arc( gesture.center.x , -gesture.center.y, gesture.radius , 0 , 2 * Math.PI );
+    ctx.stroke();
+    ctx.closePath();
+
+  }
+
+  function onSwipe(gesture){
+
+    //Sets up how all of the swipe lines will look
+    ctx.lineWidth = 3;
+    ctx.strokeStyle  = 'rgba(0,0,255,.7)';
+
+    //Draws a line from the swipe start position, to its current position
+    ctx.beginPath();
+    ctx.moveTo( gesture.startPosition.x , -gesture.startPosition.y );
+    ctx.lineTo( gesture.position.x , -gesture.position.y );
+    ctx.stroke();
+    ctx.closePath();
+
+
+  }
+
+  function drawScreenTap(frame){
+
+    // Gets a time difference, which will translate to opacity
+    var timeDif = frame.timestamp - screenTapTime;
+
+    // Gets an opacity based on the time difference
+    var opacity = 100000/timeDif;
+
+    // Sets our fill style according to this opacity
+    ctx.fillStyle = 'rgba(255,255,0,'+ opacity +')';
+
+    // Sets radius for the circle
+    var radius = 30;
+
+    // Draw the circle at the gesture position
+    ctx.beginPath();
+    ctx.arc( screenTap.x , -screenTap.y, radius , 0 , 2 * Math.PI );
+    ctx.fill();
+
+  }
+
+
+  function drawKeyTap(frame){
+
+ 
+    // Gets a time difference, which will translate to opacity
+    var timeDif = frame.timestamp - keyTapTime;
+
+    // Gets an opacity based on the time difference
+    var opacity = 100000/timeDif;
+
+    // Sets our fill style according to this opacity
+    ctx.fillStyle = 'rgba(0,255,255,'+ opacity +')';
+
+    // Sets radius for the circle
+    var radius = 30;
+
+    // Draw the circle at the gesture position
+    ctx.beginPath();
+    ctx.arc( keyTap.x, -keyTap.y, radius , 0 , 2 * Math.PI );
+    ctx.fill();
+
+
+  }
+
+  // Sets up the controller
+  // Remember to Enable gestures here!
+  var controller = new Leap.Controller({ enableGestures: true });
+
+  // Defines the controller's frame function
+  controller.on( 'frame' , draw );
+
+  // Connect the controller to get frames moving
+  controller.connect();
+
+
+
+
+</script>
+
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0
+  }
+
+  #canvas { 
+    position: fixed; 
+    top: 0; 
+    left: 0;
+  }
+
+</style>
+
+

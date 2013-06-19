@@ -1,0 +1,110 @@
+<canvas id='canvas'></canvas>
+<script src='leap.js'></script>
+<script>
+
+  // Create our canvas variable, using the canvas DOM element
+  var canvas = document.getElementById( 'canvas' );
+
+  // Resize the canvas so that it takes up the whole screen
+  canvas.width = document.body.clientWidth;
+  canvas.height = document.body.clientHeight;
+
+  // Create the 2D rendering context
+  var ctx = canvas.getContext( '2d' );
+
+  // Setting the zero of the canvas, so that is corresponds
+  // with the leap coordinate system
+  ctx.translate( canvas.width/2 , canvas.height );
+
+  // This is the function we will call every loop
+  // which passes frame data into our function
+  function draw( frame ) {
+
+    // Clear the last frame drawn
+    ctx.clearRect( -canvas.width/2 , -canvas.height , canvas.width , canvas.height );
+
+    // Create an array of all the pointables in this frame
+    var pointables = frame.pointables;
+
+    // Setting the color for the fingers to Red
+    ctx.fillStyle = 'rgba(255,0,0,.7)';
+
+    // Loop through all of the pointables,
+    // drawing a point at each tipPosition
+    for ( var i = 0; i < pointables.length; i++ ) {
+
+      var pointable = pointables[i];
+
+      // Getting the pointables position
+      var pos = pointable.tipPosition;
+
+      // Making the radius of the circle correspond to the touchDist
+      var radius = 20;
+
+      // Draw the circle at the tip position
+      ctx.beginPath();
+      ctx.arc( pos.x , -pos.y, radius , 0 , 2 * Math.PI );
+      ctx.fill();
+
+    }
+
+    // Creates an array of all of the frames gestures
+    var gestures = frame.gestures;
+
+    //Sets up how all of the swipe lines will look
+    ctx.lineWidth = 3;
+    ctx.strokeStyle  = 'rgba(0,0,255,.7)';
+
+    // Loop through all of the gestures and draw each type
+    for ( var i = 0; i < gestures.length; i++){
+
+      var gesture = gestures[i];
+      
+      if( gesture.type == "swipe" ){
+
+        //Draws a line from the swipe start position, to its current position
+        ctx.beginPath();
+        ctx.moveTo( gesture.startPosition.x , -gesture.startPosition.y );
+        ctx.lineTo( gesture.position.x , -gesture.position.y );
+        ctx.stroke();
+        ctx.closePath();
+
+      }
+
+    }
+
+
+  };
+
+  // Sets up the controller
+  // Remember to Enable gestures here!
+  var controller = new Leap.Controller({ enableGestures: true });
+
+  // Defines the controller's frame function
+  controller.on( 'frame' , draw );
+
+  // Connect the controller to get frames moving
+  controller.connect();
+
+
+
+
+</script>
+
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0
+  }
+
+  #canvas { 
+    position: fixed; 
+    top: 0; 
+    left: 0;
+  }
+
+</style>
+
