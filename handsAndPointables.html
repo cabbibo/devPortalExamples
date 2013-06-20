@@ -1,0 +1,131 @@
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0;
+    background: #fff;
+  }
+
+  #canvasHolder { 
+    width:570px;
+    height:400px;
+    background:#000;
+  }
+
+</style>
+
+
+<div id="canvasHolder"><canvas id='canvas'></canvas></div>
+<script src='leap.js'></script>
+
+
+<script>
+
+  // Create our canvas variable, using the canvas DOM element
+  var canvas = document.getElementById( 'canvas' );
+
+  // Resize the canvas so that it takes up the whole screen
+  canvas.width = 570; 
+  canvas.height = 400;
+
+  // Create the 2D rendering context
+  var ctx = canvas.getContext( '2d' );
+
+  // Setting the zero of the canvas, so that is corresponds
+  // with the leap coordinate system
+  ctx.translate( canvas.width/2 , canvas.height );
+
+
+  // This is the function we will call every loop
+  // which passes frame data into our function
+  function draw( frame ) {
+
+    // Clear the last frame drawn
+    ctx.clearRect( -canvas.width/2 , -canvas.height , canvas.width , canvas.height );
+
+    // Create an array of all the pointables in this frame
+    var pointables = frame.pointables;
+
+    // Setting the color to red for the pointables
+    ctx.fillStyle = '#ff0000';
+
+    // Loop through all of the pointables,
+    // drawing a point at each tipPosition
+    for ( var i = 0; i < pointables.length; i++ ) {
+
+      var pointable = pointables[i];
+
+      // Getting the pointables position
+      var pos = pointable.tipPosition;
+
+      // Defining the radius of the circle
+      var radius = 10;
+
+      // Draw the circle at the tip position
+      ctx.beginPath();
+      ctx.arc( pos.x-radius/2 , -pos.y-radius/2 , radius , 0 , 2*Math.PI );
+      ctx.fill();
+
+    }
+
+
+    //Create an array of all the hands in the frame
+    var hands = frame.hands;
+
+    // Setting the color to green for the hands
+    ctx.fillStyle = '#00ff00';
+
+    // Loop through all of the pointables,
+    // drawing a point at each palmPosition
+    for ( var i = 0; i < hands.length; i++ ) {
+
+      var pointable = hands[i];
+
+      // Getting the pointables position
+      var pos = pointable.palmPosition;
+
+      // Defining the radius of the circle
+      var radius = 30;
+
+      // Draw the circle at the tip position
+      ctx.beginPath();
+      ctx.arc( pos.x-radius/2 , -pos.y-radius/2 , radius , 0 , 2*Math.PI );
+      ctx.fill();
+
+    }
+
+    
+
+  };
+
+  // Sets up the controller
+  var controller = new Leap.Controller();
+
+  // Defines the controller's frame function
+  controller.on( 'frame' , draw );
+
+  // Connect the controller to get frames moving
+  controller.connect();
+
+
+</script>
+
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0
+  }
+
+  #canvas { 
+    position: fixed; 
+    top: 0; 
+    left: 0;
+  }
+
+</style>
+
