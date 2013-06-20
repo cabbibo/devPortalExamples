@@ -1,4 +1,24 @@
-<canvas id='canvas'></canvas>
+
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0;
+    background: #fff;
+  }
+
+  #canvasHolder { 
+    width:570px;
+    height:400px;
+    background:#000;
+  }
+
+</style>
+
+
+<div id="canvasHolder"><canvas id='canvas'></canvas></div>
 <script src='leap.js'></script>
 <script>
 
@@ -11,7 +31,6 @@
   var screenTap = { x:-99999 , y:0 };
   var keyTap = { x:-99999 , y:0 };
 
-
   // This variable is for keeping track of which frame the key
   // was tapped. It will be used to change the opacity of the 
   // circle we are drawing at the screenTap
@@ -20,10 +39,9 @@
  
   // Create our canvas variable, using the canvas DOM element
   var canvas = document.getElementById( 'canvas' );
-
-  // Resize the canvas so that it takes up the whole screen
-  canvas.width = document.body.clientWidth;
-  canvas.height = document.body.clientHeight;
+ 
+  canvas.width = 570;
+  canvas.height = 400;
 
   // Create the 2D rendering context
   var ctx = canvas.getContext( '2d' );
@@ -88,7 +106,6 @@
 
     drawScreenTap(frame);
     drawKeyTap(frame);
-
 
   };
 
