@@ -1,0 +1,215 @@
+
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0;
+    background: #fff;
+  }
+
+  #canvasHolder { 
+    width:570px;
+    height:400px;
+    background:#000;
+  }
+
+</style>
+
+
+<div id="canvasHolder"><canvas id='canvas'></canvas></div>
+<script src='leap.js'></script>
+
+<!-- Adding this script to deal with rotation -->
+<script src='three.min.js'></script>
+
+aa
+<script src = 'http://code.jquery.com/jquery-latest.min.js' ></script>
+<script>
+
+  // global vars for frame data
+  var frame, oFrame;
+
+  // Variable we will keep for the start of our rotation
+  var rotationStartFrame;
+
+  // starting our scale at 1, so we can see something
+  var scale = 1;
+
+  // translation for telling us where we are moving the object
+  var translation = { x:0 , y:0 };
+
+  // Create our canvas variable, using the canvas DOM element
+  var canvas = document.getElementById( 'canvas' );
+
+  canvas.width = 570;
+  canvas.height = 400;
+
+  // Create the 2D rendering context
+  var ctx = canvas.getContext( '2d' );
+
+  // Setting the zero of the canvas, so that is corresponds
+  // with the leap coordinate system
+  ctx.translate( canvas.width/2 , canvas.height );
+
+  // Setting the color we will draw with
+  ctx.fillStyle = 'rgba(255,0,0,.7)';
+
+  // This is the function we will call every loop
+  // which passes frame data into our function
+  function draw( data ) {
+
+    frame = data;
+
+    if( !oFrame ){
+      oFrame = frame;
+    }
+
+    if( !rotationStartFrame ){
+      rotationStartFrame = frame;
+    }
+
+
+
+    //Whenever we go from seeing no hands to seeing a hand
+    //reset the rotation frame
+    if(frame.hands.length == 1 && oFrame.hands.length == 0 ){
+      rotationStartFrame = frame
+    }
+
+    // Clear the last frame drawn
+    ctx.clearRect( -canvas.width/2 , -canvas.height*2 , canvas.width , canvas.height*2 );
+
+
+    //Adds to the scale based on the scaleFactor since the last frame
+    scale += frame.scaleFactor(oFrame) - 1;
+
+    //Makes sure our scale doesn't go below zero
+    if(scale <= 0){
+      scale = 0;
+    }
+
+    // Adding in our translation
+    translation.x += frame.translation(oFrame).x;
+    translation.y += frame.translation(oFrame).y;
+
+    //radius of the translation Sphere
+    var translationRadius = 50;
+
+    //Tests to make sure that the object is not out of the scene
+    if( translation.x > (canvas.width/2) + translationRadius){
+      translation.x -= canvas.width + 2*translationRadius;
+    }else if( translation.x <  - (canvas.width/2) - translationRadius ){
+      translation.x += canvas.width + 2*translationRadius;
+    }
+
+    if( translation.y >  canvas.height + translationRadius){
+      translation.y -= canvas.height + 2*translationRadius;
+    }else if( translation.y <  - translationRadius ){
+      translation.y += canvas.height + 2*translationRadius;
+    }
+
+    //get our rotation using the motions api
+    var rotation = frame.rotationMatrix(rotationStartFrame);
+
+    //Gets just the euler y from the rotation matrix 
+    //TODO: WHY IS THIS Y?
+    var angle = rotationFromMatrix(rotation).y;
+
+    // Setting the color we will draw with
+    ctx.fillStyle = '#c0ffee';
+
+    // pivot point coordinates = the center of the square
+    var cx = translation.x; // (60+200)/2
+    var cy = -translation.y; // (60+200)/2
+
+    var width = 140;
+    var height = 140;
+
+    var widthScaled = width * scale;
+    var heightScaled = height * scale;
+
+    // Note that the x and y values of the square 
+    // are relative to the pivot point.
+    var x = -widthScaled / 2; // cx + x = 130 - 70 = 60
+    var y = -heightScaled / 2; // cy + y = 130 - 70 = 60
+    var w = widthScaled; // (cx + x) + w = 60 + w = 200
+    var h = heightScaled; // (cy + y) + h = 60 + h = 200
+
+    //Save the canvas context, so that we can restore it
+    //and have it un affected
+    ctx.save();
+
+    //Translate the contex and rotate around the 
+    //center of the  square
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+
+    //Draw the rectangle
+    ctx.fillRect(x, y, w, h);
+    
+    //Restore the context, so we don't draw everything rotated
+    ctx.restore();
+
+
+    // Setting the color we will draw with
+    ctx.fillStyle = '#b0e2f0';
+
+    // Create an array of all the pointables in this frame
+    var pointables = frame.pointables;
+
+    // Loop through all of the pointables,
+    // drawing a point at each tipPosition
+    for ( var i = 0; i < pointables.length; i++ ) {
+
+      var pointable = pointables[i];
+
+      // Getting the pointables position
+      var pos = pointable.tipPosition;
+
+      // Defining the radius of the circle
+      var radius = 10;
+
+      // Draw the circle at the tip position
+      ctx.beginPath();
+      ctx.arc( pos.x-radius/2 , -pos.y-radius/2 , radius , 0 , 2*Math.PI );
+      ctx.fill();
+
+    }
+
+    oFrame = frame;
+
+  };
+
+  // Sets up the controller
+  var controller = new Leap.Controller();
+
+  // Defines the controller's frame function
+  controller.on( 'frame' , draw );
+
+  // Connect the controller to get frames moving
+  controller.connect();
+
+  function rotationFromMatrix(matrix){
+
+    var rotationMatrix = new THREE.Matrix4( 
+
+      matrix[0][0] , matrix[0][1] , matrix[0][2] , 0 ,
+      matrix[1][0] , matrix[1][1] , matrix[1][2] , 0 ,
+      matrix[2][0] , matrix[2][1] , matrix[2][2] , 0 ,
+      0            , 0            , 0            , 1
+
+    );
+
+    //Getting the euler angle from the rotation matrix
+    //Using THREE.js math
+    var euler = new THREE.Vector3();
+    euler.setEulerFromRotationMatrix(rotationMatrix);
+    return euler
+
+  }
+
+</script>
+
+
