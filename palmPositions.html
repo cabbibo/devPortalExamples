@@ -1,13 +1,34 @@
-<canvas id='canvas'></canvas>
+<style>
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    margin: 0; 
+    padding: 0;
+    background: #fff;
+  }
+
+  #canvasHolder { 
+    width:570px;
+    height:400px;
+    background:#000;
+  }
+
+</style>
+
+
+<div id="canvasHolder"><canvas id='canvas'></canvas></div>
 <script src='leap.js'></script>
+
+
 <script>
 
   // Create our canvas variable, using the canvas DOM element
   var canvas = document.getElementById( 'canvas' );
 
   // Resize the canvas so that it takes up the whole screen
-  canvas.width = document.body.clientWidth;
-  canvas.height = document.body.clientHeight;
+  canvas.width = 570; 
+  canvas.height = 400;
 
   // Create the 2D rendering context
   var ctx = canvas.getContext( '2d' );
@@ -28,7 +49,7 @@
     var pointables = frame.pointables;
 
     // Setting the color to red for the pointables
-    ctx.fillStyle = 'rgba(255,0,0,.7)';
+    ctx.fillStyle = '#ff0000';
 
     // Loop through all of the pointables,
     // drawing a point at each tipPosition
@@ -40,7 +61,7 @@
       var pos = pointable.tipPosition;
 
       // Defining the radius of the circle
-      var radius = 20;
+      var radius = 10;
 
       // Draw the circle at the tip position
       ctx.beginPath();
@@ -54,7 +75,7 @@
     var hands = frame.hands;
 
     // Setting the color to green for the hands
-    ctx.fillStyle = 'rgba(0,255,0,.7)';
+    ctx.fillStyle = '#00ff00';
 
     // Loop through all of the pointables,
     // drawing a point at each palmPosition
@@ -66,7 +87,7 @@
       var pos = pointable.palmPosition;
 
       // Defining the radius of the circle
-      var radius = 50;
+      var radius = 30;
 
       // Draw the circle at the tip position
       ctx.beginPath();
