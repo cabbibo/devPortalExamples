@@ -14,10 +14,26 @@
     background:#000;
   }
 
+  /* Start canvas hidden, 
+  and only show if a leap
+  is plugged in */
+  #canvas{
+    visibility:hidden;
+  }
+
+  #noLeapImage{
+    width:100%;
+    hieght:100%
+  }
+
 </style>
 
 
-<div id="canvasHolder"><canvas id='canvas'></canvas></div>
+<div id='canvasHolder'>
+  <canvas id='canvas'></canvas>
+  <img src='imgPH.png' id='noLeapImage'></img>
+
+</div>
 <script src='leap.js'></script>
 
 
@@ -44,6 +60,12 @@
   // This is the function we will call every loop
   // which passes frame data into our function
   iDemo.draw = function( frame ){
+
+    iDemo.canvas.style.visibility = 'visible';
+    var img = document.getElementById( 'noLeapImage' );
+    img.style.visibility = 'hidden';
+
+
 
     // Clear the last frame drawn
     iDemo.ctx.clearRect( 
